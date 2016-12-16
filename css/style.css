@@ -1,0 +1,9 @@
+main {min-width: 400px; padding: 0 10px 10px 10px;}
+.alarm-collection {border:0;}
+.alarm-collection li {padding-bottom: 5px; border-bottom: 1px solid #e0e0e0;}
+.alarm-collection p {margin: 2px 0;}
+.alarm-collection .status {margin-top: 15px;}
+.alarm-collection .title {font-size: 18px;}
+
+/* views */
+.row {margin: 0}

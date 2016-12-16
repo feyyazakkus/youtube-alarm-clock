@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="css/materialize.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<main>
+    <section id="home-view">
+	    <ul class="alarm-collection">
+		    <li class="row">
+		      <div class="col s9">
+		      	<p class="title">Send Mail to Boss!</p>
+		      <p class="time">Time: 01/01/2016 15:50</p>	
+		      </div>
+		      <div class="col s3">
+		      	<div class="status switch">
+				    <label>
+				      <input type="checkbox">
+				      <span class="lever"></span>
+				    </label>
+				  </div>
+		      </div>
+		    </li>
+    	</ul>
+    	<div class="row">
+	    	<div class="col s12 right-align">
+          <a class="waves-effect waves-light btn" id="alarm-test">test</a>
+	    		<a class="btn-floating waves-effect waves-light red" id="new-alarm"><i class="material-icons">add</i></a>
+	    	</div>
+	    </div>
+    </section>
+    <section id="create-view" hidden>
+      <h5>Create New Alarm</h5>
+      <form>
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="title" type="text" class="validate" required>
+            <label for="title">Title</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="alarm-date"></label>
+            <input type="date" name="alarm-date" class="datepicker" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input type="time" name="alarm-time" class="timepicker" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="video-id" type="text" class="validate" required>
+            <label for="video-id">Youtube Video ID</label>
+          </div>
+        </div>
+        <button type="button" class="waves-effect waves-light btn" id="goBack"><i class="material-icons left">arrow_back</i>Back</button>
+        <button type="submit" class="waves-effect red lighten-1 btn">Create</button>
+      </form>
+      
+    </section>
+	</main>
+	<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="js/materialize.min.js"></script>
+	<script type="text/javascript" src="js/popup.js"></script>
+  
+</body>
+</html>
+
+
+<!-- daha sonra kullanılacak -->
+<!-- http://codepen.io/ccrch/pen/GgPLVW -->
