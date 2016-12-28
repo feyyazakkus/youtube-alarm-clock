@@ -20,14 +20,20 @@ var app = {
 
     },
 
-    newAlarm: function (self) {
+    newAlarm: function () {
+
+        //chrome.storage.local.clear();
 
         $('#home-view').hide();
         $('#create-view').show();
 
+        var now = new Date();
+        $('input[name=alarm-date]').val(now.getFullYear() + '-' + (now.getMonth() + 1) +  '-' + now.getDate());
+        $('input[name=alarm-time]').val(app.pad(now.getHours()) + ':' + app.pad(now.getMinutes()));
+
         $("form").submit(function( event ) {
         
-            var alarm = {}; 
+            var alarm = {};
             alarm.title = $('input[name=title]').val();
             alarm.date = $('input[name=alarm-date]').val() + ' ' + $('input[name=alarm-time]').val() + ':00';
             alarm.videoId = $('input[name=video-id]').val();
@@ -59,10 +65,13 @@ var app = {
     goBack: function () {
         $('#create-view').hide();
         $('#home-view').show();
+    },
+
+    pad: function (value) {
+        return value.toString().length > 1 ? value : '0' + value;
     }
 };
 
 console.log("test");
-
 
 window.onload = app.initialize();

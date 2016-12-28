@@ -2,14 +2,34 @@
 <html>
 <head>
 	<title>Alarm Time!!!</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-	<h3>Hey wakeup!!</h3>
-	<p>Video ID: <span id="video"></span></p>
-
-	<script type="text/javascript" src="js/alarm.js">
-		
-	</script>
+	
+	<div class="cover">
+  		<div class="info">
+  			<h3>Hey wakeup!! Time to do some stuff.</h3>
+		</div>
+	</div>
+	<div class="player">
+		  <div class="screen active" id="player"></div>
+	</div>
+	<script src="js/iframe_api.js"></script>
+	<script src="js/www-widgetapi.js"></script>
+	<script src="js/alarm.js"></script>
+	
 </body>
 
 </html>
+
+<!--
+retrive single video information
+
+https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=4O_YMLDvvnw&key=AIzaSyAUOR_s6BpXqC-H4-yrO81cYb9ZoauT7Ng
+
+search videos
+https://content.googleapis.com/youtube/v3/search?part=snippet&q=gary%20more&key=AIzaSyAUOR_s6BpXqC-H4-yrO81cYb9ZoauT7Ng
+
+-->
+
+
