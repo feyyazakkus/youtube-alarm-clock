@@ -1,12 +1,22 @@
-main {min-width: 400px; padding: 0 10px 10px 10px;}
-.alarm-collection {border:0;}
-.alarm-collection li {padding-bottom: 5px; border-bottom: 1px solid #e0e0e0;}
-.alarm-collection p {margin: 2px 0;}
-.alarm-collection .status {margin-top: 15px;}
-.alarm-collection .title {font-size: 18px;}
+body {font-family: 'Open Sans', sans-serif; margin: 0}
+header {padding: 15px 10px; font-size: 20px; background: #222; color: #fff; text-transform: capitalize;}
+header .btn {float: right; margin-top: -3px;}
+main {min-width: 400px; padding: 0 10px 10px 10px; padding: 0}
 
+.alarms-list {padding: 0; border:0; list-style-type: none;}
+.alarms-list li {padding: 0 10px; border-bottom: 1px solid #e0e0e0; cursor: pointer;}
+.alarms-list li:hover {background: #eee}
+.alarms-list .image {float: left; padding: 10px;}
+.alarms-list .info {float: left; padding: 10px;}
+.alarms-list p {margin: 2px 0;}
+.alarms-list .title {font-size: 18px;}
+
+#create-view {padding: 15px 15px 10px 15px;}
+.input-field.date {float: left; width: 48%;}
+.input-field.time {float: left; width: 47.5%;}
 /* views */
-.row {margin: 0}
+.row {margin: 0;}
+.row::after {content: ''; display: block; clear: both;}
 
 .cover {
   position: absolute;
@@ -50,3 +60,30 @@ main {min-width: 400px; padding: 0 10px 10px 10px;}
 .player .screen.active {
   opacity: 1;
 }
+
+.btn {
+	text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: capitalize;    
+    padding: .5em .8em;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 0;
+}
+.btn-red {background: #cc181e;}
+.btn-green {background: #588E27}
+.btn-default {color: #444}
+.clearfix {clear: both;}
+input {font-family: 'Open Sans', sans-serif; margin-bottom: 10px;}
+input[type=text], input[type=time], input[type=date] {
+	width: 92%;
+	height: 26px;
+    outline: none;
+    padding: 5px 10px;
+    font-size: 1em;
+    border: 1px solid #dcdee0;
+    border-radius: 2px;
+}
+	

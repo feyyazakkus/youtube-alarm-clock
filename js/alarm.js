@@ -3,12 +3,12 @@ chrome.runtime.getBackgroundPage(function(bg) {
 
     chrome.storage.local.get('alarms', function (result) {
     	console.log(result);
+    	var alarmList = result.alarms;
 
     	for (var i = 0; i < result.alarms.length; i++) {
-    		if ("myAlarm" == bg.alarm.name) {
+    		if (result.alarms[i]['name'] == bg.alarm.name) {
 
-    			//document.getElementById('video').innerHTML = result.alarms[i].videoId;
-    			//document.getElementById('title').innerHTML = result.alarms[i].title;
+    			document.getElementById('alarm-name').innerHTML = result.alarms[i].name;
 				
 	            var player = new YT.Player('player', {
 				    height: '390',
@@ -25,6 +25,7 @@ chrome.runtime.getBackgroundPage(function(bg) {
 		        	event.target.playVideo();
 		      	}
 
+		      	break;
     		}
     	}
     });
