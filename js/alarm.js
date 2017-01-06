@@ -8,7 +8,7 @@ chrome.runtime.getBackgroundPage(function(bg) {
     	for (var i = 0; i < result.alarms.length; i++) {
     		if (result.alarms[i]['name'] == bg.alarm.name) {
 
-    			document.getElementById('alarm-name').innerHTML = result.alarms[i].name;
+    			$('#alarm-name').html(result.alarms[i].name);
 				
 	            var player = new YT.Player('player', {
 				    height: '390',

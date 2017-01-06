@@ -2,88 +2,42 @@ body {font-family: 'Open Sans', sans-serif; margin: 0}
 header {padding: 15px 10px; font-size: 20px; background: #222; color: #fff; text-transform: capitalize;}
 header .btn {float: right; margin-top: -3px;}
 main {min-width: 400px; padding: 0 10px 10px 10px; padding: 0}
-
-.alarms-list {padding: 0; border:0; list-style-type: none;}
-.alarms-list li {padding: 0 10px; border-bottom: 1px solid #e0e0e0; cursor: pointer;}
-.alarms-list li:hover {background: #eee}
-.alarms-list .image {float: left; padding: 10px;}
-.alarms-list .info {float: left; padding: 10px;}
-.alarms-list p {margin: 2px 0;}
-.alarms-list .title {font-size: 18px;}
-
 #create-view {padding: 15px 15px 10px 15px;}
-.input-field.date {float: left; width: 48%;}
-.input-field.time {float: left; width: 47.5%;}
-/* views */
 .row {margin: 0;}
 .row::after {content: ''; display: block; clear: both;}
 
-.cover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-}
-.cover .info {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-family: 'Roboto Slab', serif;
-  font-size: 24px;
-  line-height: 26px;
-  text-align: center;
-}
-.player {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-.player .screen {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  margin: auto;
-  opacity: 0;
-  transition: opacity .5s;
-}
-.player .screen.active {
-  opacity: 1;
-}
 
-.btn {
-	text-decoration: none;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
-    text-transform: capitalize;    
-    padding: .5em .8em;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 0;
-}
+/* alarms list */
+.alarms-list {margin: 0; padding: 0; border:0; list-style-type: none; max-height: 400px; overflow-y: auto; overflow-x: hidden;}
+.alarms-list li {padding: 0 10px; border-bottom: 1px solid #e0e0e0; cursor: pointer;}
+.alarms-list li:hover {background: #f5f5f5}
+.alarms-list .image {float: left; width: 100px; padding: 10px 0 10px 0;}
+.alarms-list .image img {width: 100%; height: 100%; border-radius: 2px;}
+.alarms-list .info {float: left; padding: 10px;}
+.alarms-list p {margin: 2px 0;}
+.alarms-list .alarm-name {font-size: 18px;}
+.alarms-list .status {border-radius: 4px; color: #fff; display: -webkit-inline-box;}
+.alarms-list .status.on::after {content: 'Active'; background: #588E27; padding: 1px 5px; border-radius: 4px; font-weight: bold;}
+.alarms-list .status.off::after {content: 'Passive'; background: #cc181e; padding: 1px 5px; border-radius: 4px; font-weight: bold;}
+
+
+
+/* video player */
+.cover {position: absolute; top: 0; left: 0; z-index: 2; width: 100%; height: 100%; }
+.cover .info {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-family: 'Roboto Slab', serif; font-size: 24px; line-height: 26px; text-align: center; }
+.player {position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%; overflow: hidden; }
+.player .screen {position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 1; margin: auto; opacity: 0; transition: opacity .5s; }
+.player .screen.active {opacity: 1; }
+
+/* buttons */
+.btn {text-decoration: none; color: #fff; font-size: 14px; font-weight: 600; text-transform: capitalize; padding: .5em .8em; border-radius: 4px; cursor: pointer; border: 0; }
 .btn-red {background: #cc181e;}
 .btn-green {background: #588E27}
 .btn-default {color: #444}
 .clearfix {clear: both;}
+
+/* form elements */
 input {font-family: 'Open Sans', sans-serif; margin-bottom: 10px;}
-input[type=text], input[type=time], input[type=date] {
-	width: 92%;
-	height: 26px;
-    outline: none;
-    padding: 5px 10px;
-    font-size: 1em;
-    border: 1px solid #dcdee0;
-    border-radius: 2px;
-}
-	
+input[type=text], input[type=time], input[type=date] {width: 92%; height: 26px; outline: none; padding: 5px 10px; font-size: 1em; border: 1px solid #dcdee0; border-radius: 2px; }
+.input-field.date {float: left; width: 48%;}
+.input-field.time {float: left; width: 47.5%;}	
