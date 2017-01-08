@@ -8,12 +8,15 @@ chrome.runtime.getBackgroundPage(function(bg) {
     	for (var i = 0; i < result.alarms.length; i++) {
     		if (result.alarms[i]['name'] == bg.alarm.name) {
 
-    			$('#alarm-name').html(result.alarms[i].name);
+    			var videoId = result.alarms[i].videoId;
+    			var name = result.alarms[i].name;
+
+	   			document.getElementById('alarm-name').innerHTML = name;
 				
 	            var player = new YT.Player('player', {
 				    height: '390',
 				    width: '640',
-				    videoId: 'K0YEVNacmtw',
+				    videoId: videoId,
 				    playerVars: { 'controls': 0 },
 				    events: {
 				      'onReady': onPlayerReady,
@@ -28,5 +31,10 @@ chrome.runtime.getBackgroundPage(function(bg) {
 		      	break;
     		}
     	}
+    });
+
+    // delete alarm
+    chrome.alarms.clear(bg.alarm.name, function () {
+    	console.log("alarm deleted");
     });
 });
