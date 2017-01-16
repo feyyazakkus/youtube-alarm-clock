@@ -10,8 +10,9 @@ chrome.runtime.getBackgroundPage(function(bg) {
 
     			var videoId = result.alarms[i].videoId;
 
+	   			document.title = bg.alarm.name + ' - Youtube Alarm Clock';
 	   			document.getElementById('alarm-name').innerHTML = bg.alarm.name;
-				
+
 	            var player = new YT.Player('player', {
 				    height: '390',
 				    width: '640',
