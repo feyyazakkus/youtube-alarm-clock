@@ -1,6 +1,9 @@
 var app = {
     initialize: function () {
 
+        //chrome.storage.local.clear();
+        //chrome.alarms.clearAll();
+
         var self = this;
         this.getAlarms();
 
@@ -17,6 +20,7 @@ var app = {
 
         var self = this;
         $('.home-view').hide();
+        $('.update-view').hide();
         $('.create-view').show();
 
         var now = new Date();
@@ -27,7 +31,9 @@ var app = {
 
         // save alarm
         $("#form-create").unbind('submit').submit(function(event) {
-            
+
+            event.preventDefault();
+
             $('.loader').show();
             $('.create-view').hide();
 
@@ -37,6 +43,10 @@ var app = {
             alarm.videoLink = $('input[name=video-link]').val();
             alarm.videoId = self.getVideoId(alarm.videoLink);
 
+            // defaults
+            alarm.image = 'icon.png';
+            alarm.videoTitle = 'No video';
+
             // validate alarm date
             var now = new Date().getTime();
             var alarmDate = new Date(alarm.date).getTime();
@@ -44,19 +54,40 @@ var app = {
             if (alarmDate > now) { // create alarm
                 chrome.alarms.create(alarm.name, {when: alarmDate});
 
-                var alarms_arr = [];
-                chrome.storage.local.get('alarms', function (data) {
-                    if (typeof data.alarms !== 'undefined') {
-                        data.alarms.push(alarm);
-                        alarms_arr = data.alarms;
-                        
+                // get video information from youtube data api
+                $.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+status%2C+snippet&id='+ alarm.videoId +'&key=' + GOOGLE_API_KEY, function (apiData) {
+                    console.log("resp:", apiData);
+
+                    if (apiData.items.length > 0) {
+                        if (apiData.items[0].status.embeddable) {
+
+                            alarm.image = apiData.items[0].snippet.thumbnails.default.url;
+                            alarm.videoTitle = apiData.items[0].snippet.title;
+
+                            var alarms_arr = [];
+                            chrome.storage.local.get('alarms', function (data) {
+                                if (typeof data.alarms !== 'undefined') {
+                                    data.alarms.push(alarm);
+                                    alarms_arr = data.alarms;
+                                    
+                                } else {
+                                    alarms_arr.push(alarm);
+                                }
+                                chrome.storage.local.set({'alarms': alarms_arr}, function () {
+                                    self.getAlarms();
+                                });
+                            });
+
+                        } else {
+                            alert("'The requested video is not allowed to be played in embedded players.");
+                            $('.loader').hide();
+                            $('.create-view').show();
+                            return;
+                        }
                     } else {
-                        alarms_arr.push(alarm);
+                        alert("Youtube video link is not valid.");
+                        return;
                     }
-                    
-                    chrome.storage.local.set({'alarms': alarms_arr}, function () {
-                        self.getAlarms();
-                    });
                 });
 
             } else {
@@ -65,7 +96,6 @@ var app = {
                 $('.create-view').show();
             }
 
-            event.preventDefault();
         });
     },
 
@@ -76,15 +106,13 @@ var app = {
         $('.loader').show();
 
         chrome.storage.local.get('alarms', function (data) {
-            console.log("alarms storage:", data.alarms);
 
             if (typeof data.alarms !== 'undefined' && data.alarms.length > 0) {
                 data.alarms.reverse();
-
+                console.log("storage.local.get:", data.alarms);
                 // set alarms status
                 chrome.alarms.getAll(function(alarms) {
-                    console.log("alarms:", alarms)
-
+                    console.log("alarms.getAll", alarms);
                     for (var i = 0; i < data.alarms.length; i++) {
                         data.alarms[i]['status'] = 'off';
                         for (var j = 0; j < alarms.length; j++) {
@@ -93,52 +121,32 @@ var app = {
                             }
                         }
                     }
-                });
-
-                // collect video ids
-                var video_ids = [];
-                for (var i = 0; i < data.alarms.length; i++) {
-                    video_ids.push(data.alarms[i]['videoId']);
-                }
-
-                var video_ids_str = video_ids.join();
-
-                // retrive youtube video informations
-                $.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id='+ video_ids_str +'&key=' + GOOGLE_API_KEY, function (apiData) {
-                    console.log("resp:", apiData);
 
                     // set content
                     var alarmsHTML = '';
                     for (var i = 0; i < data.alarms.length; i++) {
 
-                        var img = 'icon.png';
-                        var videoTitle = 'No video';
                         var name = data.alarms[i]['name'];
                         var date = data.alarms[i]['date'];
                         var status = data.alarms[i]['status'];
+                        var image = data.alarms[i]['image'];
+                        var videoTitle = data.alarms[i]['videoTitle'];
 
-                        for (var j = 0; j < apiData.items.length; j++) {
-                            if (data.alarms[i]['videoId'] == apiData.items[j]['id']) {
-                                img = apiData.items[j].snippet.thumbnails.default.url;
-                                videoTitle = apiData.items[j].snippet.title;
-                            }
-                        }
-
-                        if (videoTitle.length > 30) {
-                            videoTitle = videoTitle.substring(0, 30) + '..';
+                        if (videoTitle.length > 40) {
+                            videoTitle = videoTitle.substring(0, 40) + '..';
                         }
 
                         alarmsHTML += '<li class="row '+ name +'">' +
-                            '<div class="image">\n' +
-                                '<img src="'+ img +'">\n' +
-                            '</div>\n' +
-                            '<div class="info">\n' +
-                                '<p class="alarm-name">'+ name +'</p>\n' +
-                                '<p class="alarm-date">Date: '+ date +'</p>\n' +
-                                '<p class="video-title">Video: '+ videoTitle +'..</p>\n' +
-                                '<p class="status '+ status +'"></p>\n' + 
-                            '</div>\n' +
-                          '</li>\n';
+                        '<div class="image">\n' +
+                        '<img src="'+ image +'">\n' +
+                        '</div>\n' +
+                        '<div class="info">\n' +
+                        '<p class="alarm-name">'+ name +'</p>\n' +
+                        '<p class="alarm-date">'+ date +'</p>\n' +
+                        '<p class="video-title">'+ videoTitle +'</p>\n' +
+                        '<p class="status '+ status +'"></p>\n' + 
+                        '</div>\n' +
+                        '</li>\n';
                     }
 
                     $('.alarms-list').html(alarmsHTML);
@@ -152,7 +160,6 @@ var app = {
 
                     self.goBack();
                     $('.loader').hide();
-
                 });
 
             } else {
@@ -169,23 +176,27 @@ var app = {
         $('.update-view').show();
 
         chrome.storage.local.get('alarms', function (data) {
-            
+
             for (var i = 0; i < data.alarms.length; i++) {
                 if (alarmName == data.alarms[i]['name']) {
                     console.log(data.alarms[i]);
-                    var date = new Date(data.alarms[i]['date']).toISOString().substring(0, 10);
+                    var date = new Date(data.alarms[i]['date'] + ':00');
+                    var dateInput = date.getFullYear() + '-' + self.pad(date.getMonth() + 1) + '-' + date.getDate();
                     var time = data.alarms[i]['date'].split(' ')[1];
 
-                    $('input[name=alarm-name]').val(alarmName);
-                    $('input[name=alarm-date]').val(date);
-                    $('input[name=alarm-time]').val(time);
-                    $('input[name=video-link]').val(data.alarms[i]['videoLink']);
+                    $('#form-update input[name=alarm-name]').val(alarmName);
+                    $('#form-update input[name=alarm-date]').val(dateInput);
+                    $('#form-update input[name=alarm-time]').val(time);
+                    $('#form-update input[name=video-link]').val(data.alarms[i]['videoLink']);
+
                 }
             }
         });
 
         // on update
         $("#form-update").unbind('submit').submit(function(event) {
+
+            event.preventDefault();
 
             var alarm = {};
             alarm.name = $('#form-update input[name=alarm-name]').val();
@@ -207,30 +218,51 @@ var app = {
 
                     chrome.alarms.create(alarm.name, {when: alarmDate});
 
-                    var alarms_arr = [];
-                    chrome.storage.local.get('alarms', function (data) {
-                        if (typeof data.alarms !== 'undefined') {
-                            data.alarms.push(alarm);
-                            alarms_arr = data.alarms;
-                            
+                    // retrive video information from youtube data api
+                    $.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+status%2C+snippet&id='+ alarm.videoId +'&key=' + GOOGLE_API_KEY, function (apiData) {
+                        console.log("resp:", apiData);
+
+                        if (apiData.items.length > 0) {
+                            if (apiData.items[0].status.embeddable) {
+
+                                alarm.image = apiData.items[0].snippet.thumbnails.default.url;
+                                alarm.videoTitle = apiData.items[0].snippet.title;
+
+                                var alarms_arr = [];
+                                chrome.storage.local.get('alarms', function (data) {
+                                    if (typeof data.alarms !== 'undefined') {
+                                        data.alarms.push(alarm);
+                                        alarms_arr = data.alarms;
+                                        
+                                    } else {
+                                        alarms_arr.push(alarm);
+                                    }
+                                    chrome.storage.local.set({'alarms': alarms_arr}, function () {
+                                        self.getAlarms();
+                                    });
+                                });
+
+                            } else {
+                                alert("'The requested video is not allowed to be played in embedded players.");
+                                $('.loader').hide();
+                                $('.create-view').show();
+                                return;
+                            }
                         } else {
-                            alarms_arr.push(alarm);
+                            alert("Youtube video link is not valid.");
+                            $('.loader').hide();
+                            $('.create-view').show();
+                            return;
                         }
-                        
-                        chrome.storage.local.set({'alarms': alarms_arr}, function () {
-                            self.getAlarms();
-                        });
                     });
                 });
 
             } else {
-                console.log("else girdi");
                 alert("Alarm time cant less then the current time");
                 $('.loader').hide();
                 $('.update-view').show();
             }
-
-            event.preventDefault();
+            
         });
 
         // on delete
@@ -251,10 +283,9 @@ var app = {
     deleteAlarm: function (alarmName, callback) {
 
         var self = this;
-        console.log(alarmName + " deleting..");
         chrome.alarms.clear(alarmName, function () {            
             chrome.storage.local.get('alarms', function (data) {
-                
+
                 var alarms = data.alarms;
                 for (var i = 0; i < data.alarms.length; i++) {
                     if (alarmName == data.alarms[i]['name']) {
