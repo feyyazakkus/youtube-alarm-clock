@@ -12,7 +12,7 @@ The browser should be open to trigger an alarm. When alarm time comes and browse
 * Set alarm date and time
 * Copy and paste a youtube video link
 
-![](https://github.com/feyyazakkus/youtube-alarm-clock/blob/master/img/screenshot-2.png?raw=true)
+![](https://github.com/feyyazakkus/youtube-alarm-clock/blob/master/img/screenshot.png?raw=true)
 
 > **Note:** Vevo videos and offical music videos are not allowed to be played in embeded players, try not to use them.
 
