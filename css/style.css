@@ -15,6 +15,7 @@ main {min-width: 400px; padding: 0 10px 10px 10px; padding: 0}
 .alarms-list .image {float: left; width: 100px; padding: 10px 0 10px 0;}
 .alarms-list .image img {width: 100%; height: 100%; border-radius: 2px;}
 .alarms-list .info {float: left; padding: 10px;}
+.alarms-list .time {float: right; padding: 12px 0 10px 5px; font-size: 16px;}
 .alarms-list p {margin: 2px 0;}
 .alarms-list .alarm-name {font-size: 18px;}
 .alarms-list .status {border-radius: 4px; color: #fff; display: -webkit-inline-box;}

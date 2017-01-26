@@ -16,6 +16,87 @@ var app = {
         });
     },
 
+    getAlarms: function () {
+
+        var self = this;
+        $('.alarms-list').html('');
+        $('.loader').show();
+
+        chrome.storage.local.get('alarms', function (data) {
+
+            if (typeof data.alarms !== 'undefined' && data.alarms.length > 0) {
+                data.alarms.reverse();
+                console.log("storage.local.get:", data.alarms);
+                // set alarms status
+                chrome.alarms.getAll(function(alarms) {
+                    console.log("alarms.getAll", alarms);
+                    for (var i = 0; i < data.alarms.length; i++) {
+                        data.alarms[i]['status'] = 'off';
+                        for (var j = 0; j < alarms.length; j++) {
+                            if (alarms[j]['name'] == data.alarms[i]['name']) {
+                                data.alarms[i]['status'] = 'on';
+                            }
+                        }
+                    }
+
+                    // set content
+                    var alarmsHTML = '';
+                    for (var i = 0; i < data.alarms.length; i++) {
+
+                        var name = data.alarms[i]['name'];
+                        var nameFull = data.alarms[i]['name'];
+                        var date = data.alarms[i]['date'];
+                        var time = data.alarms[i]['time'];
+                        var status = data.alarms[i]['status'];
+                        var image = data.alarms[i]['image'];
+                        var videoTitle = data.alarms[i]['videoTitle'];
+
+                        console.log(new Date(date + ':00'));
+
+                        if (name.length > 19) {
+                            name = name.substring(0, 19) + '..';
+                        }
+
+                        if (videoTitle.length > 30) {
+                            videoTitle = videoTitle.substring(0, 30) + '..';
+                        }
+
+                        alarmsHTML += '<li class="row '+ name +'">' +
+                        '<div class="image">\n' +
+                            '<img src="'+ image +'">\n' +
+                        '</div>\n' +
+                        '<div class="info">\n' +
+                            '<p class="alarm-name" title="'+ nameFull +'">'+ name +'</p>\n' +
+                            '<p class="video-title">'+ videoTitle +'</p>\n' +
+                            '<p class="alarm-date">'+ date +'</p>\n' +
+                            '<p class="status '+ status +'"></p>\n' + 
+                        '</div>\n' +
+                        '<div class="time">\n' +
+                            '<p>'+ time +'</p>'
+                        '</div>\n' +
+                        '</li>\n';
+                    }
+
+                    $('.alarms-list').html(alarmsHTML);
+                    $('.no-alarm').hide();
+
+                    // bind click event to alarms
+                    $('.alarms-list li.row').click(function () {
+                        var alarmName = $(this).attr('class').replace('row ', '');
+                        self.updateAlarm(alarmName);
+                    });
+
+                    self.goBack();
+                    $('.loader').hide();
+                });
+
+            } else {
+                $('.no-alarm').show();
+                $('.loader').hide();
+            }
+        });
+    },
+
     createAlarm: function () {
 
         var self = this;
@@ -39,7 +120,8 @@ var app = {
 
             var alarm = {};
             alarm.name = $('input[name=alarm-name]').val();
-            alarm.date = $('input[name=alarm-date]').val() + ' ' + $('input[name=alarm-time]').val();
+            alarm.date = $('input[name=alarm-date]').val();
+            alarm.time = $('input[name=alarm-time]').val();
             alarm.videoLink = $('input[name=video-link]').val();
             alarm.videoId = self.getVideoId(alarm.videoLink);
 
@@ -49,7 +131,7 @@ var app = {
 
             // validate alarm date
             var now = new Date().getTime();
-            var alarmDate = new Date(alarm.date).getTime();
+            var alarmDate = new Date(alarm.date + ' ' + alarm.time + ':00').getTime();
 
             if (alarmDate > now) { // create alarm
                 chrome.alarms.create(alarm.name, {when: alarmDate});
@@ -99,76 +181,6 @@ var app = {
         });
     },
 
-    getAlarms: function () {
-
-        var self = this;
-        $('.alarms-list').html('');
-        $('.loader').show();
-
-        chrome.storage.local.get('alarms', function (data) {
-
-            if (typeof data.alarms !== 'undefined' && data.alarms.length > 0) {
-                data.alarms.reverse();
-                console.log("storage.local.get:", data.alarms);
-                // set alarms status
-                chrome.alarms.getAll(function(alarms) {
-                    console.log("alarms.getAll", alarms);
-                    for (var i = 0; i < data.alarms.length; i++) {
-                        data.alarms[i]['status'] = 'off';
-                        for (var j = 0; j < alarms.length; j++) {
-                            if (alarms[j]['name'] == data.alarms[i]['name']) {
-                                data.alarms[i]['status'] = 'on';
-                            }
-                        }
-                    }
-
-                    // set content
-                    var alarmsHTML = '';
-                    for (var i = 0; i < data.alarms.length; i++) {
-
-                        var name = data.alarms[i]['name'];
-                        var date = data.alarms[i]['date'];
-                        var status = data.alarms[i]['status'];
-                        var image = data.alarms[i]['image'];
-                        var videoTitle = data.alarms[i]['videoTitle'];
-
-                        if (videoTitle.length > 40) {
-                            videoTitle = videoTitle.substring(0, 40) + '..';
-                        }
-
-                        alarmsHTML += '<li class="row '+ name +'">' +
-                        '<div class="image">\n' +
-                        '<img src="'+ image +'">\n' +
-                        '</div>\n' +
-                        '<div class="info">\n' +
-                        '<p class="alarm-name">'+ name +'</p>\n' +
-                        '<p class="alarm-date">'+ date +'</p>\n' +
-                        '<p class="video-title">'+ videoTitle +'</p>\n' +
-                        '<p class="status '+ status +'"></p>\n' + 
-                        '</div>\n' +
-                        '</li>\n';
-                    }
-
-                    $('.alarms-list').html(alarmsHTML);
-                    $('.no-alarm').hide();
-
-                    // bind click event to alarms
-                    $('.alarms-list li.row').click(function () {
-                        var alarmName = $(this).attr('class').replace('row ', '');
-                        self.updateAlarm(alarmName);
-                    });
-
-                    self.goBack();
-                    $('.loader').hide();
-                });
-
-            } else {
-                $('.no-alarm').show();
-                $('.loader').hide();
-            }
-        });
-    },
-
     updateAlarm: function (alarmName) {
 
         var self = this;
@@ -180,9 +192,10 @@ var app = {
             for (var i = 0; i < data.alarms.length; i++) {
                 if (alarmName == data.alarms[i]['name']) {
                     console.log(data.alarms[i]);
-                    var date = new Date(data.alarms[i]['date'] + ':00');
-                    var dateInput = date.getFullYear() + '-' + self.pad(date.getMonth() + 1) + '-' + date.getDate();
-                    var time = data.alarms[i]['date'].split(' ')[1];
+                    //var date = new Date(data.alarms[i]['date'] + '00:00:00');
+                    //var dateInput = date.getFullYear() + '-' + self.pad(date.getMonth() + 1) + '-' + date.getDate();
+                    var dateInput = data.alarms[i]['date'];
+                    var time = data.alarms[i]['time'];
 
                     $('#form-update input[name=alarm-name]').val(alarmName);
                     $('#form-update input[name=alarm-date]').val(dateInput);
@@ -200,13 +213,14 @@ var app = {
 
             var alarm = {};
             alarm.name = $('#form-update input[name=alarm-name]').val();
-            alarm.date = $('#form-update input[name=alarm-date]').val() + ' ' + $('#form-update input[name=alarm-time]').val();
+            alarm.date = $('#form-update input[name=alarm-date]').val();
+            alarm.time = $('#form-update input[name=alarm-time]').val();
             alarm.videoLink = $('#form-update input[name=video-link]').val();
             alarm.videoId = self.getVideoId(alarm.videoLink);
 
             // validate alarm date
             var now = new Date().getTime();
-            var alarmDate = new Date(alarm.date).getTime();
+            var alarmDate = new Date(alarm.date + ' ' + alarm.time + ':00').getTime();
             
             // delete alarm and create new one
             if (alarmDate > now) {
